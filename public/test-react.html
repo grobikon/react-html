@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+
+
+<body>
+
+<!--
+Обязательно должен быть компонент, внутрь которого вы внедрите корневой компонент React
+Далее у этого компонента могут быть уже внутренние компоненты
+-->
+<div id="root"></div>
+
+
+<!-- Можем использовать специальный синтаксис JavaScript для описания HTML тегов-->
+<!-- Называется JSX (JavaScript Syntax Extension)-->
+
+<script type="text/babel">
+
+    function alertTitle(title) {
+        alert(title);
+    }
+
+    function printTitle(title) {
+        console.log(title);
+    }
+
+    // создание React компонента
+    // название функции - это будет название компонента
+    function MyButton(props) { // название обязательно должно быть с большой буквы
+
+        // // ссылка на функцию
+        // var handlerFunction = () => printTitle(props.title);
+        //
+        // if (props.title.length > 10) {
+        //     handlerFunction = () => alertTitle(props.title);
+        // }
+
+        // кортеж (tuple)
+        const [count, setCount] = React.useState(0);
+        const [width, setWidth] = React.useState(props.width ? parseInt(props.width) : 100);
+
+        // любой код логики работы приложения или его иниц-я
+        return (
+            <div>
+                <button
+                    style={{color: props.color, width: width}}
+                    onClick={() => {
+                        setCount(count + 1);
+                        setWidth(width + 50);
+                    }}
+                >
+                    {count}
+                </button>
+            </div>
+        );
+
+    }
+
+    // родительский компонент для размещения кнопок
+    function ButtonManager() {
+        return (
+            <>
+                <MyButton title="button1" color="blue" width="200"/>
+                <MyButton title="button2" color="white" width="20"/>
+                <MyButton title="button3" width="50"/>
+                <MyButton title="button44w35345"/>
+                <MyButton title="button5кенкенкен"/>
+            </>
+        );
+    }
+
+    // внедрение компонента на страницу
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<ButtonManager/>);
+
+
+</script>
+
+</body>
+
+
+</html>

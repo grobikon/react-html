@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+<!--
+Обязательно должен быть компонент, внутрь которого вы внедрите корневой компонент React
+Далее у этого компонента могут быть уже внутренние компоненты
+-->
+<div id="root"></div>
+
+</body>
+<script type="text/babel">
+    //  общий контейнер для поиска и отображения
+    function FilterableProductTable({products}) {
+
+        return (
+            <div>
+                <SearchBar/>
+                <ProductTable products={products}/>
+            </div>
+        );
+    }
+
+    // область поиска (влияет на данные таблицы)
+    function SearchBar() {
+
+    }
+
+    // таблица с данными товаров
+    function ProductTable({products}) {
+
+        // массив React компонентов ProductRow
+        const rows = [];
+
+        // проходим по всем продуктам и формируем из них React компонент ProductRow
+        products.forEach(
+            (product) => {
+                rows.push(
+                    <ProductRow
+                        product={product}
+                        key={product.name}/>
+                );
+
+            });
+
+        return (
+            <div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Цена (руб)</th>
+                    </tr>
+                    </thead>
+                    <tbody>{rows}</tbody>
+                </table>
+            </div>
+        );
+    }
+
+    // строка таблицы с названием категории (занимает всю строку)
+    function ProductCategoryRow() {
+
+    }
+
+    // строка таблицы с информацией о товаре
+    function ProductRow({product}) {
+        return (
+            <tr>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+            </tr>
+        );
+    }
+
+    // данные можем получать по сети после запроса на backend
+    // в нашем примере данные должны быть проинициализированы раньше, чем внедрение корневого компонента React
+    const PRODUCTS = [
+        {category: "Фрукты", price: "100", stocked: true, name: "Ананас"},
+        {category: "Фрукты", price: "135", stocked: true, name: "Абрикос"},
+        {category: "Фрукты", price: "2100", stocked: false, name: "Яблоко"},
+        {category: "Фрукты", price: "500", stocked: false, name: "Банан"},
+        {category: "Овощи", price: "20", stocked: true, name: "Картофель"},
+        {category: "Овощи", price: "85", stocked: false, name: "Помидор"},
+        {category: "Овощи", price: "92", stocked: true, name: "Огурец"},
+    ];
+
+    // внедрение компонента на страницу
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<FilterableProductTable products={PRODUCTS}/>);
+</script>
+</html>
