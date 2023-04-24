@@ -92,9 +92,14 @@
 
     // строка таблицы с информацией о товаре
     function ProductRow({product}) {
+        // можем вернуть зачеркнутый тег с названием товара
+        const name = product.stocked ? product.name :
+            <s>
+                {product.name}
+            </s>;
         return (
             <tr>
-                <td>{product.name}</td>
+                <td>{name}</td>
                 <td>{product.price}</td>
             </tr>
         );
