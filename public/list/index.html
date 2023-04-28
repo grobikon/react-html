@@ -21,17 +21,62 @@
     //  общий контейнер для поиска и отображения
     function FilterableProductTable({products}) {
 
+        // если эти значения будут изменяться, то будет происходить авто перерисовка компонентов, которые их используют
+        // поэтому нужно быть внимательным и следить за всеми местами в коде, где изменяете эти значения!
+        const [inStockOnly, setInStockOnly] = React.useState(false);
+
+        // при каждой отрисовке компонента - будут считывать переменные из состояния и фильтровать данные
+        const filteredProducts = [];
+
+        products.forEach((product) => {
+
+            // будет ли добавлен товар для отображения
+            var canAdd = true;
+
+            // фильтруем по переключателю (в наличии или нет)
+            if (inStockOnly && !product.stocked) {
+                canAdd = false;
+            }
+
+            if (canAdd) {
+                filteredProducts.push(product);
+            }
+        });
+
+        console.log(filteredProducts);
         return (
             <div>
-                <SearchBar/>
-                <ProductTable products={products}/>
+                <SearchBar
+                    inStockOnly={inStockOnly} // поставить галочку или нет в дочернем компоненте
+                    onInStockOnlyChange={setInStockOnly} // ссылка на метод
+
+                />
+                <ProductTable products={filteredProducts}/>
             </div>
         );
     }
 
-    // область поиска (влияет на данные таблицы)
-    function SearchBar() {
+    // область поиска (влияет на данные таблицы).
+    // важно! компонент не должен изменять входящие свойства, а только вызывать callback методы,
+    // чтобы родительский компонент смог использовать измененные значения
+    function SearchBar({
+                           inStockOnly: inStockOnly, // только для чтения (read-only) - будет ли нажата галочка при отображении
+                           onInStockOnlyChange       // callback метод для обработки в родительском компоненте (при нажатии на галочку)
+                       }) {
+        return (
+            <>
 
+                <div>
+                    Показать только в наличии
+                    <input type="checkbox" id="box"
+                           checked={inStockOnly}
+                           onChange={(e) => onInStockOnlyChange(e.target.checked)}
+                    />
+
+
+                </div>
+            </>
+        );
     }
 
     // таблица с данными товаров
