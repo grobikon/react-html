@@ -20,21 +20,22 @@
 
 </body>
 <script type="text/babel">
+
+    // class SearchValues {
+    //     constructor(filterText, inStockOnly) {
+    //         this.filterText = filterText;
+    //         this.inStockOnly = inStockOnly;
+    //     }
+    // }
+
     //  общий контейнер для поиска и отображения
     function FilterableProductTable({products}) {
 
-        // spread синтаксис
-        function onInStockOnlyChange(inStockOnly) {
+        // spread синтаксис с универсальной подстановкой названия свойства объекта
+        function searchValueChanged(propName, value) {
             setSearchValues({
                 ...searchValues,
-                inStockOnly: inStockOnly
-            });
-        }
-
-        function onFilterTextChange(filterText) {
-            setSearchValues({
-                ...searchValues,
-                filterText: filterText
+                [propName]: value
             });
         }
 
@@ -78,8 +79,8 @@
             <div>
                 <SearchBar
                     searchValues={searchValues} // все значения для поиска
-                    onInStockOnlyChange={onInStockOnlyChange} // ссылка на метод
-                    onFilterTextChange={onFilterTextChange} // ссылка на метод
+                    onInStockOnlyChange={searchValueChanged} // ссылка на метод
+                    onFilterTextChange={searchValueChanged} // ссылка на метод
                 />
                 <ProductTable products={filteredProducts}/>
             </div>
@@ -103,11 +104,11 @@
                             type="search"
                             value={searchValues.filterText}
                             placeholder="Поиск..."
-                            onChange={(e) => onFilterTextChange(e.target.value)}
+                            onChange={(e) => onFilterTextChange('filterText', e.target.value)}
                         />
 
                         <button onClick={(event) => {
-                            onFilterTextChange('');
+                            onFilterTextChange('filterText', '');
                             event.preventDefault(); // остановить дальнейшее действие нажатия (которое проведет в перезагрузке страницы, т.к. мы находимся внутри form
                         }}>
                             <svg viewBox="0 0 24 24" id="cancel">
@@ -124,7 +125,7 @@
                            className="checkbox"
                            id="box"
                            checked={searchValues.inStockOnly}
-                           onChange={(e) => onInStockOnlyChange(e.target.checked)}
+                           onChange={(e) => onInStockOnlyChange('inStockOnly', e.target.checked)}
                     />
                     <label htmlFor="box"></label>
 
