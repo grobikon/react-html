@@ -23,10 +23,30 @@
     //  общий контейнер для поиска и отображения
     function FilterableProductTable({products}) {
 
+        // spread синтаксис
+        function onInStockOnlyChange(inStockOnly) {
+            setSearchValues({
+                ...searchValues,
+                inStockOnly: inStockOnly
+            });
+        }
+
+        function onFilterTextChange(filterText) {
+            setSearchValues({
+                ...searchValues,
+                filterText: filterText
+            });
+        }
+
         // если эти значения будут изменяться, то будет происходить авто перерисовка компонентов, которые их используют
         // поэтому нужно быть внимательным и следить за всеми местами в коде, где изменяете эти значения!
-        const [filterText, setFilterText] = React.useState(''); // filterText - введенный текст для поиска
-        const [inStockOnly, setInStockOnly] = React.useState(false); // галочка для фильтрации "только в наличии"
+        //const [filterText, setFilterText] = React.useState(''); // filterText - введенный текст для поиска
+        //const [inStockOnly, setInStockOnly] = React.useState(false); // галочка для фильтрации "только в наличии"
+
+        // код инициализации состояния выполняется только 1 раз при первой отрисовке компонента
+        // затем при повторной отрисовке - просто будет браться оттуда значение searchValues
+        // const [searchValues, setSearchValues] = React.useState(new SearchValues('', false));
+        const [searchValues, setSearchValues] = React.useState({filterText: '', inStockOnly: false});
 
         // при каждой отрисовке компонента - будут считывать переменные из состояния и фильтровать данные
         const filteredProducts = [];
@@ -37,14 +57,14 @@
             var canAdd = true;
 
             // сначала фильтруем по тексту
-            if (
-                product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1 // если товар НЕ содержит поисковый текст
+            if (searchValues.filterText.length > 0 &&
+                product.name.toLowerCase().indexOf(searchValues.filterText.toLowerCase()) === -1 // если товар НЕ содержит поисковый текст
             ) {
                 canAdd = false;
             }
 
             // фильтруем по переключателю (в наличии или нет)
-            if (inStockOnly && !product.stocked) {
+            if (searchValues.inStockOnly && !product.stocked) {
                 canAdd = false;
             }
 
@@ -57,12 +77,9 @@
         return (
             <div>
                 <SearchBar
-                    filterText={filterText}
-                    onFilterTextChange={setFilterText}
-
-                    inStockOnly={inStockOnly} // поставить галочку или нет в дочернем компоненте
-                    onInStockOnlyChange={setInStockOnly} // ссылка на метод
-
+                    searchValues={searchValues} // все значения для поиска
+                    onInStockOnlyChange={onInStockOnlyChange} // ссылка на метод
+                    onFilterTextChange={onFilterTextChange} // ссылка на метод
                 />
                 <ProductTable products={filteredProducts}/>
             </div>
@@ -73,11 +90,9 @@
     // важно! компонент не должен изменять входящие свойства, а только вызывать callback методы,
     // чтобы родительский компонент смог использовать измененные значения
     function SearchBar({
-                           filterText,              // только для чтения (read-only)
-                           onFilterTextChange,      // callback метод для обработки в родительском компоненте
-
-                           inStockOnly: inStockOnly, // только для чтения (read-only) - будет ли нажата галочка при отображении
-                           onInStockOnlyChange       // callback метод для обработки в родительском компоненте (при нажатии на галочку)
+                           searchValues, // все значения для поиска
+                           onFilterTextChange, // callback метод для обработки в родительском компоненте
+                           onInStockOnlyChange // callback метод для обработки в родительском компоненте
                        }) {
         return (
             <>
@@ -86,7 +101,7 @@
 
                         <input
                             type="search"
-                            value={filterText}
+                            value={searchValues.filterText}
                             placeholder="Поиск..."
                             onChange={(e) => onFilterTextChange(e.target.value)}
                         />
@@ -108,7 +123,7 @@
                     <input type="checkbox"
                            className="checkbox"
                            id="box"
-                           checked={inStockOnly}
+                           checked={searchValues.inStockOnly}
                            onChange={(e) => onInStockOnlyChange(e.target.checked)}
                     />
                     <label htmlFor="box"></label>
